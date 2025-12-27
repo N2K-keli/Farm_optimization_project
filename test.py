@@ -3,6 +3,8 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 
+from options_page import OptionsPage
+
 class FarmingApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -183,21 +185,14 @@ class FarmingApp(QMainWindow):
         self.statusBar().setStyleSheet("background-color: #e8f5e9; color: #2d5016; font-weight: bold;")
     
     def on_yes_clicked(self):
-        QMessageBox.information(
-            self, 
-            "Great Choice!", 
-            "Let's optimize your farm for maximum yield and efficiency!\n\n"
-            "We'll analyze your soil, crops, and resources to create\n"
-            "a personalized optimization plan for your farming operations."
-        )
-        
+        # In your existing welcome page code, modify the on_yes_clicked method:
+        # Instead of showing a message box, open the options page
+        self.hide()  # Hide welcome page
+        self.options_page = OptionsPage()  # Create options page
+        self.options_page.show()  # Show options page
+
         # Update status
-        self.statusBar().showMessage("Farm optimization started! Analyzing your farm data...")
-        
-        # Change button text temporarily
-        self.yes_button.setText("Optimizing...")
-        self.yes_button.setEnabled(False)
-        QTimer.singleShot(2000, self.reset_buttons)
+        self.statusBar().showMessage("Loading optimization options...")
     
     def on_no_clicked(self):
         reply = QMessageBox.question(
