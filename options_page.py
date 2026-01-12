@@ -15,6 +15,12 @@ try:
 except ImportError:
     CostMinimizationPage = None
 
+# Import agricultural optimization page
+try:
+    from agricultural_optimization_page import AgriculturalOptimizationPage
+except ImportError:
+    AgriculturalOptimizationPage = None
+
 
 class OptionsPage(QMainWindow):
     def __init__(self):
@@ -25,6 +31,7 @@ class OptionsPage(QMainWindow):
         # Store reference to opened windows
         self.yield_window = None
         self.cost_window = None
+        self.agri_window = None
 
         # Use the same styling as welcome page
         self.setStyleSheet("""
@@ -255,17 +262,24 @@ class OptionsPage(QMainWindow):
                 )
         
         else:
-            # Show coming soon message for other options
-            QMessageBox.information(
-                self,
-                f"{option_name} - Coming Soon",
-                f"You have selected: {option_name}\n\n"
-                f"This feature is currently under development and will be available soon.\n\n"
-                "For now, you can use:\n"
-                "• Yield Maximization - for maximum production\n"
-                "• Cost Minimization - for lowest costs"
-            )
-            self.statusBar().showMessage(f"{option_name} - Coming Soon")
+            # Agricultural Optimization
+            if AgriculturalOptimizationPage:
+                try:
+                    self.agri_window = AgriculturalOptimizationPage()
+                    self.agri_window.show()
+                    self.statusBar().showMessage(f"Opening {option_name} interface...")
+                except Exception as e:
+                    QMessageBox.critical(
+                        self,
+                        "Error",
+                        f"Failed to open {option_name} page:\n{str(e)}"
+                    )
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Feature Not Available",
+                    "The Agricultural Optimization module is not available. Please ensure all required files are present."
+                )
 
         # Simple animation effect
         button = self.sender()
