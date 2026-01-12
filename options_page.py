@@ -3,12 +3,28 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 
+# Import yield maximization page
+try:
+    from yield_maximization_page import YieldMaximizationPage
+except ImportError:
+    YieldMaximizationPage = None
+
+# Import cost minimization page
+try:
+    from cost_minimization_page import CostMinimizationPage
+except ImportError:
+    CostMinimizationPage = None
+
 
 class OptionsPage(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Farm Optimization Options")
         self.setGeometry(100, 100, 800, 600)
+        
+        # Store reference to opened windows
+        self.yield_window = None
+        self.cost_window = None
 
         # Use the same styling as welcome page
         self.setStyleSheet("""
@@ -197,16 +213,59 @@ class OptionsPage(QMainWindow):
         self.statusBar().setStyleSheet("background-color: #e8f5e9; color: #2d5016; font-weight: bold;")
 
     def on_option_clicked(self, option_name):
-        QMessageBox.information(
-            self,
-            f"{option_name} Selected",
-            f"You have selected: {option_name}\n\n"
-            f"This feature will help you optimize your farm for {option_name.lower()}.\n"
-            "Please wait while we prepare your optimization dashboard..."
-        )
-
-        # Update status
-        self.statusBar().showMessage(f"Loading {option_name} interface...")
+        """Handle option selection"""
+        if option_name == "Yield Maximization":
+            # Launch yield maximization page
+            if YieldMaximizationPage:
+                try:
+                    self.yield_window = YieldMaximizationPage()
+                    self.yield_window.show()
+                    self.statusBar().showMessage(f"Opening {option_name} interface...")
+                except Exception as e:
+                    QMessageBox.critical(
+                        self,
+                        "Error",
+                        f"Failed to open {option_name} page:\n{str(e)}"
+                    )
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Feature Not Available",
+                    "The Yield Maximization module is not available. Please ensure all required files are present."
+                )
+        
+        elif option_name == "Cost Minimization":
+            # Launch cost minimization page
+            if CostMinimizationPage:
+                try:
+                    self.cost_window = CostMinimizationPage()
+                    self.cost_window.show()
+                    self.statusBar().showMessage(f"Opening {option_name} interface...")
+                except Exception as e:
+                    QMessageBox.critical(
+                        self,
+                        "Error",
+                        f"Failed to open {option_name} page:\n{str(e)}"
+                    )
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Feature Not Available",
+                    "The Cost Minimization module is not available. Please ensure all required files are present."
+                )
+        
+        else:
+            # Show coming soon message for other options
+            QMessageBox.information(
+                self,
+                f"{option_name} - Coming Soon",
+                f"You have selected: {option_name}\n\n"
+                f"This feature is currently under development and will be available soon.\n\n"
+                "For now, you can use:\n"
+                "• Yield Maximization - for maximum production\n"
+                "• Cost Minimization - for lowest costs"
+            )
+            self.statusBar().showMessage(f"{option_name} - Coming Soon")
 
         # Simple animation effect
         button = self.sender()
