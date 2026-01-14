@@ -185,11 +185,19 @@ class FarmingApp(QMainWindow):
         self.statusBar().setStyleSheet("background-color: #e8f5e9; color: #2d5016; font-weight: bold;")
     
     def on_yes_clicked(self):
-        # In your existing welcome page code, modify the on_yes_clicked method:
-        # Instead of showing a message box, open the options page
-        self.hide()  # Hide welcome page
-        self.options_page = OptionsPage()  # Create options page
-        self.options_page.show()  # Show options page
+        """
+        FIXED: Now passes 'self' to OptionsPage so it can show this window again
+        when the back button is clicked.
+        """
+        # Hide welcome page
+        self.hide()
+        
+        # Create options page and pass reference to this window (self)
+        # This allows the options page to show this window again when going back
+        self.options_page = OptionsPage(parent_window=self)
+        
+        # Show options page
+        self.options_page.show()
 
         # Update status
         self.statusBar().showMessage("Loading optimization options...")
